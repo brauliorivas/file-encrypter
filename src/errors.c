@@ -7,5 +7,5 @@
  */
 void print_error(char message_error[])
 {
-    fprintf(stderr, message_error);
+    fprintf(stderr, "%s", message_error);
 }
