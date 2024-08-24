@@ -1,8 +1,26 @@
 #include "encrypter.h"
 
+/**
+ * Número de bits disponibles para encriptación
+ *
+ * 128, 192, 256
+ */
 int available_bits[] = {128, 192, 256};
+
+/**
+ * Algoritmos de encriptación disponibles
+ *
+ * aes, blowfish
+ */
 char *available_algorithms[] = {"aes", "blowfish"};
 
+/**
+ * Verifica si el número de bits es válido. Los valores válidos son 128, 192 y 256
+ *
+ * @param bit Número de bits
+ *
+ * @return true si el número de bits es válido, false en caso contrario
+ */
 bool is_valid_bit(int bit)
 {
     int length = sizeof(available_bits) / sizeof(available_bits[0]);
@@ -17,6 +35,13 @@ bool is_valid_bit(int bit)
     return false;
 }
 
+/**
+ * Verifica si el algoritmo de encriptación es válido. Los valores válidos son aes y blowfish
+ *
+ * @param algorithm Algoritmo de encriptación
+ *
+ * @return true si el algoritmo es válido, false en caso contrario
+ */
 bool is_valid_algorithm(char *algorithm)
 {
     int length = sizeof(available_algorithms) / sizeof(available_algorithms[0]);
@@ -31,6 +56,13 @@ bool is_valid_algorithm(char *algorithm)
     return false;
 }
 
+/**
+ * Genera una clave de encriptación a partir de una frase
+ *
+ * @param phrase Frase de encriptación, es decir contraseña textual
+ * @param key Arreglo de bytes donde se almacenará la clave generada
+ * @param n_bits Número de bits de la clave. Si es menor a 256 bits, se truncará la clave
+ */
 int generate_key_sha256(char *phrase, BYTE *key, int n_bits)
 {
     BYTE hash[SHA256_BLOCK_SIZE];
@@ -44,6 +76,14 @@ int generate_key_sha256(char *phrase, BYTE *key, int n_bits)
     }
 }
 
+/**
+ * Encripta un archivo
+ *
+ * @param algorithm Algoritmo de encriptación
+ * @param bits Número de bits de la clave
+ * @param passphrase Frase de encriptación
+ * @param file_name Nombre del archivo a encriptar
+ */
 void encrypt_file(char *algorithm, int bits, char *passphrase, char *file_name)
 {
     int original_file_fd = open(file_name, O_RDONLY, S_IRUSR);
@@ -65,6 +105,7 @@ void encrypt_file(char *algorithm, int bits, char *passphrase, char *file_name)
 
     BYTE size_bytes[8] = {0};
 
+    // Convertir el tamaño del archivo a bytes para escribirlo en la cabecera en formato Little Endian
     for (int i = 0; i < 8; i++)
     {
         BYTE byte = (file_size >> 8 * (i)) & 0xFF;
@@ -165,6 +206,12 @@ void encrypt_file(char *algorithm, int bits, char *passphrase, char *file_name)
     free(encrypt_key);
 }
 
+/**
+ * Desencripta un archivo
+ *
+ * @param passphrase Frase de encriptación
+ * @param file_name Nombre del archivo a desencriptar
+ */
 void decrypt_file(char *passphrase, char *file_name)
 {
 
@@ -187,6 +234,7 @@ void decrypt_file(char *passphrase, char *file_name)
     unsigned long long original_file_size = 0;
     BYTE size_bytes[8] = {0};
 
+    // Leer el tamaño del archivo en bytes
     BYTE byte = 0x00;
     for (int i = 0; i < 8; i++)
     {
@@ -194,6 +242,11 @@ void decrypt_file(char *passphrase, char *file_name)
         size_bytes[i] = byte;
     }
 
+    // Convertir el tamaño del archivo a entero de 64 bits, formato Big Endian.
+    // Primero se lee el byte más significativo, se almacena en el byte
+    // menos significativo de la variable original_file_size y se desplaza
+    // 8 bits a la izquierda.
+    // Se repite el proceso hasta leer el byte menos significativo.
     int i;
     for (i = 7; i > 0; i--)
     {

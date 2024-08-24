@@ -5,6 +5,12 @@
 #include "errors.h"
 #include "encrypter.h"
 
+/**
+ * Imprime la ayuda del programa
+ *
+ * @param executable Nombre del ejecutable
+ *
+ */
 void print_help(char *executable)
 {
     printf("%s encripta o desencripta un archivo usando los algoritmos AES o BLOWFISH.\n", executable);
