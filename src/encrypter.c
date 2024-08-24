@@ -242,7 +242,7 @@ void decrypt_file(char *passphrase, char *file_name)
         size_bytes[i] = byte;
     }
 
-    // Convertir el tamaño del archivo a entero de 64 bits, formato Big Endian.
+    // Convertir el tamaño del archivo a entero de 64 bits.
     // Primero se lee el byte más significativo, se almacena en el byte
     // menos significativo de la variable original_file_size y se desplaza
     // 8 bits a la izquierda.
