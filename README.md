@@ -50,7 +50,7 @@ En este último ejemplo, nos podemos dar cuenta que `encrypter` detecta automát
 ### Makefile
 
 El `Makefile` contiene las reglas necesarias para compilar el programa de forma dinámica. Automáticamente, si una nueva librería es añadida o un nuevo archivo fuente, el `Makefile` se encargará de compilarlo.
-Para las librerías, se compilan de forma estática.
+Para las librerías, se crean librerías estáticas.
 
 ### Cabecera
 
