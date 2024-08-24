@@ -1,5 +1,8 @@
 # Encrypter
 
+> [!NOTE]
+> El binario generado se guardará en la carpeta `bin/` tras compilar con `make`.
+
 Bienvenido a Encrypter, un programa que encripta o desencripta un archivo usando los algoritmos AES o BLOWFISH.
 
 ## Uso
