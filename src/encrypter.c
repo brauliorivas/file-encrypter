@@ -172,7 +172,11 @@ void encrypt_file(char *algorithm, int bits, char *passphrase, char *file_name)
         while (read(original_file_fd, read_buffer, AES_BLOCK_SIZE) > 0)
         {
             aes_encrypt(read_buffer, aes_buffer, key_schedule, bits);
-            write(new_file_fd, aes_buffer, AES_BLOCK_SIZE);
+            if (write(new_file_fd, aes_buffer, AES_BLOCK_SIZE) == -1)
+            {
+                print_error("Error al escribir el archivo encriptado");
+                exit(1);
+            }
             memset(read_buffer, 0, sizeof(read_buffer));
         }
     }
@@ -195,7 +199,11 @@ void encrypt_file(char *algorithm, int bits, char *passphrase, char *file_name)
         while (read(original_file_fd, read_buffer, BLOWFISH_BLOCK_SIZE) > 0)
         {
             blowfish_encrypt(read_buffer, enc_buf, &key);
-            write(new_file_fd, enc_buf, BLOWFISH_BLOCK_SIZE);
+            if (write(new_file_fd, enc_buf, BLOWFISH_BLOCK_SIZE) == -1)
+            {
+                print_error("Error al escribir el archivo encriptado");
+                exit(1);
+            }
             memset(read_buffer, 0, sizeof(read_buffer));
         }
     }
@@ -238,7 +246,11 @@ void decrypt_file(char *passphrase, char *file_name)
     BYTE byte = 0x00;
     for (int i = 0; i < 8; i++)
     {
-        read(original_file_fd, &byte, sizeof(BYTE));
+        if (read(original_file_fd, &byte, sizeof(BYTE)) == -1)
+        {
+            print_error("Error al leer el tamaño del archivo\n");
+            exit(1);
+        }
         size_bytes[i] = byte;
     }
 
@@ -257,7 +269,11 @@ void decrypt_file(char *passphrase, char *file_name)
     original_file_size = original_file_size | size_bytes[i];
 
     BYTE mask = 0x00;
-    read(original_file_fd, &mask, sizeof(BYTE));
+    if (read(original_file_fd, &mask, sizeof(BYTE)) == -1)
+    {
+        print_error("Error al leer la cabecera\n");
+        exit(1);
+    }
 
     int bits = 0;
     if ((mask & KEY_128) == KEY_128)
@@ -319,7 +335,11 @@ void decrypt_file(char *passphrase, char *file_name)
         while (read(original_file_fd, read_buffer, AES_BLOCK_SIZE) > 0)
         {
             aes_decrypt(read_buffer, aes_buffer, key_schedule, bits);
-            write(new_file_fd, aes_buffer, AES_BLOCK_SIZE);
+            if (write(new_file_fd, aes_buffer, AES_BLOCK_SIZE) == -1)
+            {
+                print_error("Error al escribir el archivo desencriptado");
+                exit(1);
+            }
         }
     }
     else
@@ -333,7 +353,11 @@ void decrypt_file(char *passphrase, char *file_name)
         while (read(original_file_fd, read_buffer, BLOWFISH_BLOCK_SIZE) > 0)
         {
             blowfish_decrypt(read_buffer, enc_buf, &key);
-            write(new_file_fd, enc_buf, BLOWFISH_BLOCK_SIZE);
+            if (write(new_file_fd, enc_buf, BLOWFISH_BLOCK_SIZE) == -1)
+            {
+                print_error("Error al escribir el archivo desencriptado");
+                exit(1);
+            }
         }
     }
 
